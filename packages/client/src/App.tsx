@@ -14,7 +14,7 @@ function App() {
   const [trpcClient] = useState(() => 
     trpc.createClient({
       links: [
-        httpBatchLink({ url: "http://localhost:3000/trpc" }),
+        httpBatchLink({ url: "http://localhost:8080/trpc" }),
       ],
     })
   );

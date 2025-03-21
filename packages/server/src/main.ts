@@ -1,12 +1,16 @@
-import express, { Application, NextFunction, Request, Response } from 'express'
-
+import express, { Application } from 'express'
 import * as trpcExpress from "@trpc/server/adapters/express";
 import { appRouter } from "./router";
 import cors from "cors";
-import path from 'path';
 
 const app: Application = express();
-app.use(cors());
+
+// Configure CORS - allow requests from any origin in this example
+app.use(cors({
+  origin: '*'
+}));
+
+// Set up tRPC middleware
 app.use(
   "/trpc",
   trpcExpress.createExpressMiddleware({
@@ -15,15 +19,12 @@ app.use(
   })
 );
 
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../../../packages/client/dist')));
-
-// The "catch all" handler: for any request that doesn't match one above, send back React's index.html file.
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../packages/client/dist/index.html'));
+// Add a health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
 });
 
-const PORT: number = Number(process.env.PORT) || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on Port: ${PORT}`);
+const PORT: number = Number(process.env.PORT) || 8080;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 API Server running on Port: ${PORT}`);
 });
